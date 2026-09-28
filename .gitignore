@@ -1,5 +1,6 @@
 .DS_Store
 node_modules/
+dist/
 *.log
 
 # Personal working files, not part of the shared project

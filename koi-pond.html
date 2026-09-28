@@ -9,14 +9,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Koi Pond Garden">
 <meta property="og:description" content="An interactive Japanese koi pond garden rendered in real time with Three.js — one HTML file, no assets, no build step.">
-<meta property="og:image" content="https://souranyp-stack.github.io/koi-pond-garden/og-image.jpg">
+<meta property="og:image" content="https://rbifulco.github.io/koi-pond-garden/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:url" content="https://souranyp-stack.github.io/koi-pond-garden/koi-pond.html">
+<meta property="og:url" content="https://rbifulco.github.io/koi-pond-garden/koi-pond.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Koi Pond Garden">
 <meta name="twitter:description" content="An interactive Japanese koi pond garden rendered in real time with Three.js — one HTML file, no assets.">
-<meta name="twitter:image" content="https://souranyp-stack.github.io/koi-pond-garden/og-image.jpg">
+<meta name="twitter:image" content="https://rbifulco.github.io/koi-pond-garden/og-image.jpg">
 <style>
   :root {
     --ground: #0a1311;
@@ -205,9 +205,9 @@
   <button id="strokebtn" type="button" title="Gently stroke a koi (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 13V6.8a1.4 1.4 0 0 1 2.8 0V12M10.8 11.5V5.4a1.4 1.4 0 0 1 2.8 0v6.1M13.6 11.6V6.6a1.4 1.4 0 0 1 2.8 0v6.6M16.4 10.4a1.4 1.4 0 0 1 2.8 0v4.3a6.8 6.8 0 0 1-6.8 6.8h-.6a6.3 6.3 0 0 1-5.4-3.1l-1.9-3.3a1.4 1.4 0 0 1 2.4-1.4L8 15"/></svg><span class="lbl">Stroke a koi</span></button>
   <button id="feedbtn" class="primary" type="button" title="Feed the koi (E)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="6.5" r="1.3"/><circle cx="12" cy="4.5" r="1.3"/><circle cx="16.5" cy="7" r="1.3"/><circle cx="11" cy="9.5" r="1.3"/><path d="M3.5 13.5c1.5 4 5 6.5 8.5 6.5s7-2.5 8.5-6.5"/></svg><span class="lbl">Feed the koi</span></button>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
-<script>
+<script type="module">
+import * as THREE from 'three';
 'use strict';
 /* global THREE, dat */
 /* =====================================================================================
@@ -8240,6 +8240,16 @@ addEventListener('resize', () => {
 
 async function init() {
   try {
+    const reviewCapture = new URLSearchParams(location.search).has('spatial-review-capture');
+    const reviewRoots = new Map();
+    const captureBuild = (id, build) => {
+      if (!reviewCapture) { build(); return; }
+      const before = new Set(scene.children);
+      build();
+      const roots = scene.children.filter((root) => !before.has(root));
+      roots.forEach((root, i) => { root.name ||= `${id}-${i + 1}`; });
+      reviewRoots.set(id, roots);
+    };
     await progress(0.02, 'Tracing the pond outline');
     buildSDF();
     setupWaterfallSite();
@@ -8248,20 +8258,20 @@ async function init() {
     SH.tCaustics.value = TEX.caustics;
     SH.uCausticNorm.value = 1 / (TEX.causticMean * TEX.causticMean);
     await progress(0.6, 'Shaping terrain and basin');
-    buildTerrain();
+    captureBuild('terrain', buildTerrain);
     await progress(0.66, 'Setting stones');
     buildStones();
     woodMaterials();
     await progress(0.72, 'Building the bridge and pavilion');
-    buildBridge();
-    buildPavilion();
+    captureBuild('bridge', buildBridge);
+    captureBuild('pavilion', buildPavilion);
     await progress(0.8, 'Planting the garden');
     buildVegetation();
-    buildTurtle();
+    captureBuild('turtle', buildTurtle);
     buildUnderwaterLife();
     await progress(0.86, 'Filling the pond');
     buildWater();
-    buildWaterfall();
+    captureBuild('waterfall', buildWaterfall);
     buildLanterns();
     buildPetals();
     buildFallingPetals();
@@ -8269,7 +8279,7 @@ async function init() {
     buildBubbles();
     buildPrecip();
     buildMountains();
-    if (typeof buildKoi === 'function') buildKoi();
+    if (typeof buildKoi === 'function') captureBuild('koi', buildKoi);
     buildHand();
     updateSun(); updateWaves(); updateClarity();
     makeTargets();
@@ -8294,6 +8304,19 @@ async function init() {
     updateEnv();
     const all = camera.clone(); all.layers.enableAll();
     renderer.compile(scene, all);
+    if (reviewCapture) {
+      P.holdCamera = true;
+      P.freezeScene = true;
+      updateFish(0, 0);
+      scene.updateMatrixWorld(true);
+      reviewRoots.set('frog', FROG.root ? [FROG.root] : []);
+      reviewRoots.set('lotus', WORLD.lotusFlower ? [WORLD.lotusFlower] : []);
+      const { attachPondCapture } = await import('./spatial-review.js');
+      attachPondCapture({ roots: reviewRoots, path: PATH.above, camera });
+    } else {
+      const { attachPondDiscovery } = await import('./spatial-review.js');
+      attachPondDiscovery();
+    }
     await progress(1, 'Ready');
     clock.getDelta();
     frame();

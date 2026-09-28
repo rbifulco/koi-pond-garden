@@ -1,0 +1,24 @@
+{
+  "name": "koi-pond-garden-review",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Spatial Review integration for the Koi Pond Garden",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souranyp-stack/koi-pond-garden.git"
+  },
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@alterno-dev/spatial-review": "0.7.0",
+    "three": "0.160.1"
+  },
+  "devDependencies": {
+    "vite": "^8.3.1"
+  }
+}

@@ -1,8 +1,16 @@
 # 🌸 Koi Pond Garden
 
-An ultra-realistic, interactive Japanese koi pond garden — rendered in real time in the browser with [Three.js](https://threejs.org) and custom shaders. The **entire garden lives in one HTML file**: no build step, no bundler, no asset folder. Every mesh, texture, sound and animation is generated procedurally in code. The only external dependencies are Three.js and dat.gui, loaded from a CDN.
+> This fork adds [Alterno Spatial Review](https://github.com/rbifulco/alterno-spatial-review) on the `spatial-review-integration` branch. The original garden is by Sourany Phomhome.
 
-**▶️ [Live demo](https://souranyp-stack.github.io/koi-pond-garden/)** · one file · works on desktop and mobile
+## Spatial Review fork
+
+The [garden](https://rbifulco.github.io/koi-pond-garden/) publishes the ordinary interactive site. To review it, open [Spatial Review](https://spatial-review.alterno.dev/) and enter the garden URL. The editor discovers a capture page at `koi-pond.html?spatial-review-capture=1` and shows selected garden structures, pond life, and the authored above-water camera path. The capture bridge only accepts the official editor origin (and other loopback ports during local development).
+
+This fork uses a Vite build to bundle the published Spatial Review SDK and the same Three.js version for the garden and serializer. Run `npm ci`, then `npm run dev` or `npm run build`. GitHub Actions deploys the `spatial-review-integration` branch to GitHub Pages. See [the integration plan](docs/spatial-review-integration-plan.md) for scope and limitations.
+
+An ultra-realistic, interactive Japanese koi pond garden — rendered in real time in the browser with [Three.js](https://threejs.org) and custom shaders. The original garden lives in one HTML file. This review fork bundles that file with Three.js and the Spatial Review SDK; meshes, textures, sound, and animation remain generated procedurally in code.
+
+**▶️ [Original live demo](https://souranyp-stack.github.io/koi-pond-garden/)** · works on desktop and mobile
 &nbsp;·&nbsp; ⭐ **If you like it, star the repo** — it helps others find it.
 
 ![Koi pond garden — live footage](demo.gif)
@@ -37,16 +45,17 @@ An ultra-realistic, interactive Japanese koi pond garden — rendered in real ti
 
 ## Run it locally
 
-It's a single file, so you can just open it — but a local server avoids browser security limits on textures and audio:
+Install dependencies and start the development server for the review fork:
 
 ```bash
-git clone https://github.com/souranyp-stack/koi-pond-garden.git
+git clone https://github.com/rbifulco/koi-pond-garden.git
 cd koi-pond-garden
-python3 -m http.server 8765
-# then open http://localhost:8765/koi-pond.html
+npm ci
+npm run dev
+# open the local URL printed by Vite
 ```
 
-Or simply double-click `koi-pond.html` to open it directly in your browser.
+The upstream single-file version can still be opened directly from [the original repository](https://github.com/souranyp-stack/koi-pond-garden).
 
 ## How it's made
 
@@ -57,7 +66,7 @@ Everything you see is built by code when the page loads — there are no `.png`,
 - **Water, lighting, shadows, caustics and depth of field** are custom GLSL shaders running on the GPU via WebGL.
 - **Sound** is synthesized with the Web Audio API — no recordings.
 
-That's why the whole thing is one ~560 KB text file instead of a folder of megabytes of assets, and why anyone can open it and read exactly how any part works.
+The garden's procedural implementation remains in `koi-pond.html`; the review integration is in `spatial-review.js`.
 
 ## The prompt
 
@@ -71,7 +80,7 @@ This project was built by directing [Claude](https://claude.ai) in rounds — de
 - [Three.js](https://threejs.org) r160 (WebGL renderer)
 - [dat.gui](https://github.com/dataarts/dat.gui) for the control panel
 - Custom GLSL shaders, procedural textures, and the Web Audio API
-- No build step, no framework, no assets
+- Vite build for Spatial Review and the GitHub Pages fork
 
 ## Show your support
 
