@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { pondDiscoveryForPage } from './spatial-review-discovery.js';
 import {
   SceneAssetRegistry,
   attachSceneAssetRegistryBridge,
@@ -16,10 +17,7 @@ const authorization = createSpatialReviewEditorAuthorization({
 });
 
 export function attachPondDiscovery() {
-  const detach = attachSpatialReviewDiscoveryBridge({
-    name: 'Koi Pond Garden',
-    liveCapture: 'koi-pond.html?spatial-review-capture=1',
-  }, authorization);
+  const detach = attachSpatialReviewDiscoveryBridge(pondDiscoveryForPage(window.location.href), authorization);
   window.addEventListener('pagehide', detach, { once: true });
 }
 
