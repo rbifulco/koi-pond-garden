@@ -28,4 +28,4 @@
 
 ## Status
 
-The local branch, editor approval, SDK 0.7.0 installation, integration code, and production build are complete. Browser review, fork creation, branch upload, and Pages publication remain to be verified.
+The integration uses SDK and protocol 0.8.0. The production build passes. Local cross-origin browser verification confirms eight actors, two assemblies, the above-water camera route, bridge and koi geometry, decoded texture resources, source references, and stable actor inventory across repeated catalog requests. The existing Pages workflow publishes the `spatial-review-integration` branch.
