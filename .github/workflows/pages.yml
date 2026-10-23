@@ -27,14 +27,21 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - run: npm test
       - run: npm run build
         env:
           VITE_REVIEW_BUILD_ID: ${{ github.sha }}
+      - run: npm run verify:publish
       - uses: actions/configure-pages@v5
         with:
           enablement: true
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
+          include-hidden-files: true
       - id: deploy
         uses: actions/deploy-pages@v4
+      - name: Verify published discovery and exact build files
+        run: npm run verify:publish
+        env:
+          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
