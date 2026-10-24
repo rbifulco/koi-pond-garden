@@ -68,7 +68,7 @@ function navigationSequence(path, fov) {
 }
 
 export function attachPondCapture({ roots, path, camera }) {
-  const buildId = import.meta.env.VITE_REVIEW_BUILD_ID || 'local-review-v1';
+  const buildId = `koi-pond-sdk-0.9.0-${import.meta.env.VITE_REVIEW_BUILD_ID || 'local-review-v2'}`;
   const registry = new SceneAssetRegistry(buildId);
   registry.registerAssembly({ assemblyId: 'garden', name: 'Garden', sourceRef: 'koi-pond.html#init', root: new THREE.Group() });
   registry.registerAssembly({ assemblyId: 'pond', name: 'Pond', sourceRef: 'koi-pond.html#buildSDF', parentAssemblyId: 'garden', root: new THREE.Group() });

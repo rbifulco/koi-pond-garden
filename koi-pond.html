@@ -8300,10 +8300,15 @@ async function init() {
   $('strokebtn').addEventListener('click', () => { startAudio(); startStroke(); });
   $('tb-freeze').addEventListener('click', () => setFreeze(!P.freezeScene));
   $('tb-clean').addEventListener('click', () => setClean(true));
-    await progress(0.93, 'Compiling shaders');
-    updateEnv();
-    const all = camera.clone(); all.layers.enableAll();
-    renderer.compile(scene, all);
+    // The hidden capture document exports geometry and generated image sources.
+    // Compiling the entire live pond and its postprocessing is unrelated to that
+    // evidence and can delay bridge readiness for minutes on software renderers.
+    if (!reviewCapture) {
+      await progress(0.93, 'Compiling shaders');
+      updateEnv();
+      const all = camera.clone(); all.layers.enableAll();
+      renderer.compile(scene, all);
+    }
     if (reviewCapture) {
       P.holdCamera = true;
       P.freezeScene = true;
@@ -8319,7 +8324,7 @@ async function init() {
     }
     await progress(1, 'Ready');
     clock.getDelta();
-    frame();
+    if (!reviewCapture) frame();
     setTimeout(() => { $('loader').style.opacity = 0; setTimeout(() => $('loader').remove(), 900); }, 150);
   } catch (err) {
     console.error(err);
