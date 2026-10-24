@@ -3,14 +3,14 @@
 ## Access decision
 
 - Approved editor: `https://spatial-review.alterno.dev` (user approved 2026-09-28).
-- Proposed deployment: `https://rbifulco.github.io/koi-pond-garden/` from the `spatial-review-integration` branch of a fork (fork and publishing pending).
+- Published website: `https://rbifulco.github.io/koi-pond-garden/` from the existing `spatial-review-integration` branch and Pages workflow.
 - Framing: allow the official editor to embed only the discovery and capture page if the selected connection mode requires it. GitHub Pages cannot apply separate framing headers to individual static routes.
 - Data: deliberately registered Three.js scene roots and descendants, geometry, materials, generated textures, source references, discovery metadata, and authored camera paths. No DOM, browser storage, cookies, or unrelated application state. No credential-bearing texture URLs are expected: the website generates textures in canvas and loads Three.js and dat.gui from public CDNs.
 - The user approved this editor origin and registered data scope. No other production editor is authorized.
 
 ## Representation
 
-- New integration. Keep the ordinary `index.html` redirect and `koi-pond.html` visitor experience intact; use a dedicated capture state selected by a query parameter.
+- Existing integration updated to SDK 0.9.0. Keep the ordinary `index.html` redirect and `koi-pond.html` visitor experience intact; use a dedicated capture state selected by a query parameter.
 - Scene: stable actor IDs for pond terrain, bridge, pavilion, waterfall, lotus flower, frog, turtle, and koi as an instanced group. Capture construction groups at the point they are built.
 - Ownership: garden/world owner, plus place owners for pond and shore where the SDK supports transform-only assemblies. Preserve parent-local transforms and distinguish merged geometry from individual placements.
 - Assets: expose canonical grouped meshes and their geometry, materials, and generated textures where serialization is useful. Procedural water and custom shader effects require a documented approximation or explicit exclusion if the editor cannot reproduce the live effect.
@@ -28,7 +28,7 @@
 
 ## Status
 
-The integration uses SDK and protocol 0.8.0. The production build passes. Local cross-origin browser verification confirms eight actors, two assemblies, the above-water camera route, bridge and koi geometry, decoded texture resources, source references, and stable actor inventory across repeated catalog requests. The existing Pages workflow publishes the `spatial-review-integration` branch.
+The integration uses SDK and protocol 0.9.0. The production build passes. Local cross-origin browser verification confirms eight actors, two assemblies, the above-water camera route, bridge and koi geometry, decoded texture resources, source references, and stable actor inventory across repeated catalog requests. The existing Pages workflow publishes the `spatial-review-integration` branch.
 
 
 ## Publication verification
@@ -104,8 +104,45 @@ comparison remains limited by the same software-GPU startup timeout; this is not
 a passed visual-parity measurement. Controls, scene factories, and visitor
 rendering parameters were not changed.
 
-Production acceptance starts at `https://rbifulco.github.io/koi-pond-garden/`
-in `https://spatial-review.alterno.dev/review`. Inspect the terrain/bridge without
-selection highlighting in Scene and Asset, and the existing above-water route
-in Experience. Preserve existing review feedback; use a disposable review
-session for any test observation.
+### Published acceptance
+
+[Pages run 40123180449](https://github.com/rbifulco/koi-pond-garden/actions/runs/40123180449)
+succeeded for source commit `192ca476973cdd8dbcc23ec55c30a7758fcb5c20`.
+The deployed discovery document returned HTTP 200 with JSON content type and
+`Access-Control-Allow-Origin: *`. Starting from the ordinary website URL, the
+official editor discovered the published capture and reported build ID
+`koi-pond-sdk-0.9.0-192ca476973cdd8dbcc23ec55c30a7758fcb5c20`.
+
+Read-only editor checks passed:
+
+- Scene loaded all 8/8 asset meshes, eight objects, two assemblies and one path
+  reference. The ground's supported color/UV appearance was inspected with
+  selection explicitly cleared (`Nothing selected`).
+- Asset opened the arched wooden bridge: 52,728 triangles, 41,290 vertices,
+  four nodes, two materials, geometry ready and 4/4 texture bindings ready.
+  The bridge's two materials share two image resources. The terrain Asset
+  reported geometry ready and 2/2 texture bindings ready.
+- Experience opened the above-water journey with 10 stops and 10 transitions,
+  timeline timing, FOV controls and the live spatial context.
+- No browser JavaScript error occurred. No feedback note, comment, or other
+  persistent review edit was created. Existing feedback was not modified.
+
+The official-editor transport audit measured all eight unique assets at
+30,182,716 B for Scene geometry and 40,544,620 B for Asset detail. These are
+actual negotiated `Float32Array` and `Uint16Array`/`Uint32Array` backing-buffer
+bytes, counting shared buffers once within a response. They exclude object
+heap overhead and texture memory. Both profiles share texture resources rather
+than duplicating their storage by placement or view: all 13 unique registered
+image IDs completed successfully, totalling 3,657,185 B of encoded PNG transfer
+and an estimated 9,830,400 B (9.375 MiB) of decoded RGBA8 image storage. The
+corresponding RGBA8 full-mipmap GPU estimate is 12.5 MiB, not a measured driver
+allocation. These counts cover the deliberately registered representation;
+custom-shader-only textures outside supported material slots remain the
+appearance limitations described above.
+
+Validation used a disposable Chromium software-GPU context. The editor's
+animation callbacks were spaced by 120 ms in that context to avoid contention
+on the shared test host; this did not change website source or published
+behavior. This is functional/appearance evidence, not a production frame-rate
+benchmark. The ordinary full-pond visual-performance timeout remains the
+explicit limitation above.
